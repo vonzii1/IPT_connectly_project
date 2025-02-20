@@ -1,0 +1,241 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+		<script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+		<script type="text/javascript">
+			window.tailwind.config = {
+				darkMode: ['class'],
+				theme: {
+					extend: {
+						colors: {
+							border: 'hsl(var(--border))',
+							input: 'hsl(var(--input))',
+							ring: 'hsl(var(--ring))',
+							background: 'hsl(var(--background))',
+							foreground: 'hsl(var(--foreground))',
+							primary: {
+								DEFAULT: 'hsl(var(--primary))',
+								foreground: 'hsl(var(--primary-foreground))'
+							},
+							secondary: {
+								DEFAULT: 'hsl(var(--secondary))',
+								foreground: 'hsl(var(--secondary-foreground))'
+							},
+							destructive: {
+								DEFAULT: 'hsl(var(--destructive))',
+								foreground: 'hsl(var(--destructive-foreground))'
+							},
+							muted: {
+								DEFAULT: 'hsl(var(--muted))',
+								foreground: 'hsl(var(--muted-foreground))'
+							},
+							accent: {
+								DEFAULT: 'hsl(var(--accent))',
+								foreground: 'hsl(var(--accent-foreground))'
+							},
+							popover: {
+								DEFAULT: 'hsl(var(--popover))',
+								foreground: 'hsl(var(--popover-foreground))'
+							},
+							card: {
+								DEFAULT: 'hsl(var(--card))',
+								foreground: 'hsl(var(--card-foreground))'
+							},
+						},
+					}
+				}
+			}
+		</script>
+		<script>
+			/*
+			$(document).ready(function() {
+				$.ajax({
+					url: '/posts/get_posts/',
+					type: 'GET',
+					dataType: 'json',
+					success: function(data) {
+						$('.posts').empty();
+						$.each(data, function(index, post) {
+							var postElement = $('<div class="post"><h2>' + post.author + '</h2><p>' + post.content + '</p></div>');
+							$.each(post.comments, function(index, comment) {
+								postElement.append('<div class="comment"><p>' + comment.author + ': ' + comment.text + '</p></div>');
+							});
+							$('.posts').append(postElement);
+							$('.posts').append('<div class="post"><h2>' + post.author + '</h2><p>' + post.content + '</p></div>');
+						});
+					}
+				});
+			});
+			*/
+
+
+			function logout() {
+				const token = localStorage.getItem('authToken');  // Assuming you store the token in localStorage
+			  
+				if (!token) {
+				  alert('No token found! Please log in first.');
+				  return;
+				}
+			  
+				fetch('/posts/logout/', {  // Change the URL to your actual logout endpoint
+				  method: 'POST',
+				  headers: {
+					'Authorization': `Token ${token}`,
+					'Content-Type': 'application/json'
+				  }
+				})
+				.then(response => {
+				  if (response.ok) {
+					alert('Logout successful!');
+					localStorage.removeItem('authToken');  // Remove the token from localStorage
+					//localStorage.removeItem('userData');  // Remove the userdata from localStorage
+					window.location.href = '/';  // Redirect to login page (optional)
+				  } else {
+					return response.json().then(data => {
+					  alert(`Error: ${data.error}`);
+					});
+				  }
+				})
+				.catch(error => {
+				  console.error('Logout request failed:', error);
+				  alert('Something went wrong. Please try again.');
+				});
+			  }
+
+			  // Check token on page load
+			  window.addEventListener('load', function() {
+				const token = localStorage.getItem('authToken');
+				if (!token) {
+				  alert('Please log in first');
+				  window.location.href = '/';
+				}
+			  })
+
+			  
+		</script>
+		<style type="text/tailwindcss">
+			@layer base {
+				:root {
+					--background: 0 0% 100%;
+--foreground: 240 10% 3.9%;
+--card: 0 0% 100%;
+--card-foreground: 240 10% 3.9%;
+--popover: 0 0% 100%;
+--popover-foreground: 240 10% 3.9%;
+--primary: 240 5.9% 10%;
+--primary-foreground: 0 0% 98%;
+--secondary: 240 4.8% 95.9%;
+--secondary-foreground: 240 5.9% 10%;
+--muted: 240 4.8% 95.9%;
+--muted-foreground: 240 3.8% 46.1%;
+--accent: 240 4.8% 95.9%;
+--accent-foreground: 240 5.9% 10%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 5.9% 90%;
+--input: 240 5.9% 90%;
+--ring: 240 5.9% 10%;
+--radius: 0.5rem;
+				}
+				.dark {
+					--background: 240 10% 3.9%;
+--foreground: 0 0% 98%;
+--card: 240 10% 3.9%;
+--card-foreground: 0 0% 98%;
+--popover: 240 10% 3.9%;
+--popover-foreground: 0 0% 98%;
+--primary: 0 0% 98%;
+--primary-foreground: 240 5.9% 10%;
+--secondary: 240 3.7% 15.9%;
+--secondary-foreground: 0 0% 98%;
+--muted: 240 3.7% 15.9%;
+--muted-foreground: 240 5% 64.9%;
+--accent: 240 3.7% 15.9%;
+--accent-foreground: 0 0% 98%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 3.7% 15.9%;
+--input: 240 3.7% 15.9%;
+--ring: 240 4.9% 83.9%;
+				}
+			}
+		</style>
+  </head>
+  <body>
+	<nav class="bg-primary text-primary-foreground w-full py-4 px-8 flex flex-col md:flex-row items-center justify-between">
+		<div class="flex items-center justify-between w-full">
+			<div class="flex items-center">
+				<img class="w-8 h-8 rounded-full" src="https://placehold.co/30x30" alt="User Avatar" />
+				<h3 class="ml-2 font-bold">{{ user.username }}</h3>
+			</div>
+		 
+		  <button id="menuBtn" class="block md:hidden text-primary-foreground">
+			<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+		 </button>
+		</div>
+		<div class="hidden md:flex flex-wrap justify-center md:justify-end w-full">
+		  <button class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2 rounded-lg mb-2 md:mb-0 md:ml-2">Home</button>
+		  <button class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2 rounded-lg mb-2 md:mb-0 md:ml-2">Profile</button>
+		  <button class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2 rounded-lg mb-2 md:mb-0 md:ml-2">Messages</button>
+		  <button onclick="logout()" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2 rounded-lg mb-2 md:mb-0 md:ml-2">Logout</button>
+		</div>
+
+	  </nav>
+	  <div id="mobileMenu" class="fixed top-0 left-0 w-full h-full bg-primary/90 text-primary-foreground flex flex-col items-center justify-center z-50 hidden">
+		<button id="closeMenuBtn" class="absolute top-4 right-4 text-primary-foreground">
+		  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+		</button>
+		<a href="#" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Home</a>
+		<a href="#" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Profile</a>
+		<a href="#" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Messages</a>
+		<a href="#" id="logoutBtn" onclick="logout()" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Logout</a>
+	  </div>
+	
+
+    <div class="bg-background text-foreground min-h-screen flex flex-col items-center justify-center">
+    <h1 class="text-4xl font-bold mb-8">Welcome to Connectly</h1>
+    <div class="max-w-md w-full bg-card shadow-lg rounded-lg overflow-hidden">
+        
+        <div class="p-4">
+            <div class="flex items-center">
+                <img class="w-12 h-12 rounded-full" src="https://placehold.co/50x50" alt="User Avatar">
+                <h2 class="ml-4 font-bold">John Doe</h2>
+            </div>
+            <p class="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        
+        <div class="bg-card-foreground p-4">
+            <div class="flex items-center mb-2">
+                <img class="w-8 h-8 rounded-full" src="https://placehold.co/30x30" alt="User Avatar">
+                <p class="ml-2 text-background">Jane Smith: Nice post!</p>
+            </div>
+            <div class="flex items-center">
+                <img class="w-8 h-8 rounded-full" src="https://placehold.co/30x30" alt="User Avatar">
+                <p class="ml-2 text-background">Alex Johnson: Great content!</p>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <input type="text" placeholder="Add a comment..." class="mb-2 w-full bg-input text-input border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary">
+			<button class="bg-primary text-primary-foreground ml-2 px-4 py-2 rounded-lg mt-2">Post</button>
+        </div>
+    </div>
+</div>
+  
+   <script>
+	const menuBtn = document.getElementById('menuBtn');
+	const mobileMenu = document.getElementById('mobileMenu');
+	const closeMenuBtn = document.getElementById('closeMenuBtn');
+	menuBtn.addEventListener('click', () => {
+	  mobileMenu.classList.remove('hidden');
+	  menuBtn.classList.add('hidden');
+	});
+	closeMenuBtn.addEventListener('click', () => {
+	  mobileMenu.classList.add('hidden');
+	  menuBtn.classList.remove('hidden');
+	});
+  </script>
+  </body>
+</html>
