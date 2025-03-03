@@ -10,8 +10,8 @@ class Post(models.Model):
         ('image', 'Image'),
         ('video', 'Video'),
     )
-    post_type = models.CharField(max_length=10, choices=POST_TYPES)
-    title = models.CharField(max_length=255)
+    post_type = models.CharField(max_length=10, choices=POST_TYPES, default='text')
+    title = models.CharField(max_length=255, default='Untitled')
     content = models.TextField()
     metadata = models.JSONField(default=dict)
     author = models.ForeignKey(User, on_delete=models.CASCADE)

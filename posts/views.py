@@ -15,16 +15,37 @@ from django.db import IntegrityError
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsPostAuthor
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from .factory.post_factory import PostFactory
 from .factory.comment_factory import CommentFactory
 from .factory.like_factory import LikeFactory
-from .logger_singleton import LoggerSingleton
-from .config_manager import ConfigManager
+from .singletons.logger_singleton import LoggerSingleton
+from .singletons.config_manager import ConfigManager
 
+# get_config_setting
+def get_config_setting(request):
+        config = ConfigManager()
+        setting_key = request.GET.get('key')  
+        if setting_key:
+            setting_value = config.get_setting(setting_key)
+            return JsonResponse({setting_key: setting_value})
+        else:
+            return JsonResponse({'error': 'Key not provided'}, status=400)
 
+# update_config_setting
+def update_config_setting(request):
+    config = ConfigManager()
+    key = request.GET.get('key')
+    value = request.GET.get('value')
+    if key and value:
+        config.set_setting(key, value)
+        return JsonResponse({"message": f"Setting {key} updated to {value}"})
+    else:
+        return JsonResponse({"error": "Key and value are required"}, status=400)
+    
 # Index View
 def index(request):
     return render(request, 'index.html')
@@ -616,3 +637,22 @@ class LikeListCreate(APIView):
                 'code': status.HTTP_204_NO_CONTENT
             }
         )
+    @method_decorator(csrf_exempt, name='dispatch')
+    class PostListCreate(APIView):
+        def post(self, request):
+            return Response({"message": "Post created"})
+        
+    class PostDetailView(APIView):
+        def delete(self, request, pk):
+            # Check if the user is in the Admin group
+            if request.user.groups.filter(name='Admin').exists():
+                # Allow deletion
+                # Add your logic to delete the post here
+                return Response({"message": "Post deleted"}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                # Deny deletion
+                return Response({"message": "You do not have permission to delete this post"}, status=status.HTTP_403_FORBIDDEN)    
+    
+   
+
+    
