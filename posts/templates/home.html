@@ -1,0 +1,582 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+    <script type="text/javascript">
+      window.tailwind.config = {
+        darkMode: ['class'], 
+        theme: {
+          extend: {
+            colors: {
+              border: 'hsl(0, 0.00%, 0.00%)', 
+              input: 'hsl(0, 0.00%, 100.00%)',
+              ring: 'hsl(230, 90%, 60%)', 
+              background: {
+                DEFAULT: 'hsl(220, 15%, 97%)', 
+                dark: 'hsl(220, 15%, 12%)', 
+              },
+              foreground: {
+                DEFAULT: 'hsl(220, 15%, 18%)', 
+                dark: 'hsl(0, 0.00%, 0.00%)', 
+              },
+    
+              primary: {
+                DEFAULT: 'hsl(245, 75%, 55%)',
+                foreground: 'hsl(245, 100%, 95%)',
+              },
+    
+              secondary: {
+                DEFAULT: 'hsl(200, 2.50%, 23.30%)', 
+                foreground: 'hsl(0, 0.00%, 100.00%)',
+              },
+    
+              success: {
+                DEFAULT: 'hsl(150, 60%, 45%)', 
+                foreground: 'hsl(150, 95%, 85%)',
+              },
+              warning: {
+                DEFAULT: 'hsl(45, 95%, 55%)', 
+                foreground: 'hsl(45, 95%, 90%)',
+              },
+              destructive: {
+                DEFAULT: 'hsl(0, 75%, 50%)', 
+                foreground: 'hsl(0, 95%, 90%)',
+              },
+    
+              muted: {
+                DEFAULT: 'hsl(241, 66.90%, 30.80%)',
+                foreground: 'hsl(220, 12%, 80%)',
+              },
+    
+              accent: {
+                DEFAULT: 'hsl(192, 75.80%, 32.40%)',
+                foreground: 'hsl(280, 90%, 95%)',
+              },
+    
+              popover: {
+                DEFAULT: 'hsl(220, 15%, 92%)',
+                foreground: 'hsl(220, 15%, 30%)',
+              },
+              card: {
+                DEFAULT: 'hsl(210, 20%, 94%)',
+                foreground: 'hsl(210, 20%, 30%)',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    
+    <script>
+      // store Token in localStorage
+      function storeToken(token) {
+        localStorage.setItem('authToken', token);
+      }
+      
+      function logout() {
+        const token = localStorage.getItem('authToken');
+        fetch('/posts/logout/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Logout successful!');
+            localStorage.removeItem('authToken');
+            window.location.href = '/';
+          } else {
+            return response.json().then(data => {
+              alert(`Error: ${data.error}`);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Logout request failed:', error);
+          alert('Something went wrong. Please try again.');
+        });
+      }
+    </script>
+    {% if token %}
+    <script>
+      const token = '{{ token }}';
+      storeToken(token);
+      if (!token) {
+        alert('No token found! Please log in first.');
+      }
+    </script>
+    {% endif %}
+
+    <style type="text/tailwindcss">
+      @layer base {
+        :root {
+          --background: 0 0% 100%;
+          --foreground: 240 10% 3.9%;
+          --card: 0 0% 100%;
+          --card-foreground: 240 10% 3.9%;
+          --popover: 0 0% 100%;
+          --popover-foreground: 240 10% 3.9%;
+          --primary: 240 5.9% 10%;
+          --primary-foreground: 0 0% 98%;
+          --secondary: 240 4.8% 95.9%;
+          --secondary-foreground: 240 5.9% 10%;
+          --muted: 240 4.8% 95.9%;
+          --muted-foreground: 240 3.8% 46.1%;
+          --accent: 240 4.8% 95.9%;
+          --accent-foreground: 240 5.9% 10%;
+          --destructive: 0 84.2% 60.2%;
+          --destructive-foreground: 0 0% 98%;
+          --border: 240 5.9% 90%;
+          --input: 240 5.9% 90%;
+          --ring: 240 5.9% 10%;
+          --radius: 0.5rem;
+        }
+        .dark {
+          --background: 240 10% 3.9%;
+          --foreground: 0 0% 98%;
+          --card: 240 10% 3.9%;
+          --card-foreground: 0 0% 98%;
+          --popover: 240 10% 3.9%;
+          --popover-foreground: 0 0% 98%;
+          --primary: 0 0% 98%;
+          --primary-foreground: 240 5.9% 10%;
+          --secondary: 240 3.7% 15.9%;
+          --secondary-foreground: 0 0% 98%;
+          --muted: 240 3.7% 15.9%;
+          --muted-foreground: 240 5% 64.9%;
+          --accent: 240 3.7% 15.9%;
+          --accent-foreground: 0 0% 98%;
+          --destructive: 0 62.8% 30.6%;
+          --destructive-foreground: 0 0% 98%;
+          --border: 240 3.7% 15.9%;
+          --input: 240 3.7% 15.9%;
+          --ring: 240 4.9% 83.9%;
+        }
+      }
+
+      @layer components {
+        /* Improved button styles */
+        .btn {
+          @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out;
+        }
+        .btn-primary {
+          @apply bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:bg-primary/80;
+        }
+        .btn-secondary {
+          @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 active:bg-secondary/80;
+        }
+        .btn-outline {
+          @apply border border-primary text-primary hover:bg-primary/10 active:bg-primary/20;
+        }
+        .btn-text {
+          @apply text-primary hover:text-primary/80 px-3 py-2 rounded-lg hover:bg-primary/5 active:bg-primary/10;
+        }
+        .post-btn {
+          @apply flex items-center text-gray-800 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg hover:bg-secondary/10 active:bg-secondary/20;
+        }
+        .dropdown-btn {
+          @apply block w-full text-left px-4 py-2 hover:bg-primary/10 active:bg-primary/20;
+        }
+        .action-btn {
+          @apply text-gray-800 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded-full;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-background text-foreground">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground w-full py-3 px-4 sm:px-6 shadow-md">
+		<div class="max-w-7xl mx-auto flex items-center justify-between">
+		  <!-- Left side - User info -->
+		  <div class="flex items-center space-x-3">
+			<img class="w-9 h-9 rounded-full border-2 border-white/20" src="https://placehold.co/36x36" alt="User Avatar" />
+			<h3 class="font-semibold text-base sm:text-lg text-white">
+			  {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+			</h3>
+		  </div>
+
+		  <div class="absolute left-1/2 transform -translate-x-1/2">
+			<h1 class="text-xl sm:text-2xl font-bold text-white">Connectly</h1>
+		  </div>
+	  
+		  <!-- Mobile menu button -->
+		  <button id="menuBtn" class="md:hidden p-2 rounded-full hover:bg-white/10 transition-colors">
+			<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+			</svg>
+		  </button>
+	  
+		  <!-- Desktop navigation -->
+		  <div class="hidden md:flex items-center space-x-4">
+			<a href="#" class="px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors font-medium">
+			  Home
+			</a>
+			<button onclick="logout()" class="px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors font-medium">
+			  Logout
+			</button>
+		  </div>
+		</div>
+	  </nav>
+    
+    <div id="mobileMenu" class="fixed top-0 left-0 w-full h-full bg-primary/95 text-primary-foreground flex flex-col items-center justify-center z-50 hidden">
+      <button id="closeMenuBtn" class="absolute top-4 right-4 text-primary-foreground hover:text-primary-foreground/80">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <a href="#" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Home</a>
+		<a href="#" id="logoutBtn" onclick="logout()" class="text-primary-foreground hover:text-primary-foreground/80 px-3 py-2">Logout</a>
+	  </div>
+
+	  <div class="min-h-screen flex flex-col items-center py-8 px-4">
+		<h1 class="text-3xl sm:text-4xl font-bold mb-8 text-center">-------------------------</h1>
+		<div id="notificationContainer" class="w-full max-w-2xl"></div>
+  
+		<!-- Post Creation Form -->
+		<div class="w-full max-w-2xl bg-card p-4 rounded-lg shadow-md mb-6">
+		  <textarea 
+			id="postContent"
+			placeholder="What's on your mind?" 
+			class="w-full bg-input text-foreground border border-border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+			rows="3"
+		  ></textarea>
+		  <div class="flex justify-end mt-2">
+			<button id="createPostButton" class="btn btn-primary">Post</button>
+		  </div>
+		</div>
+  
+		<!-- Posts Container -->
+		<div id="postsContainer" class="w-full max-w-2xl space-y-4">
+		  <!-- Posts will be loaded here -->
+		</div>
+		
+		<button id="loadMore" class="btn btn-outline mt-6">Load More</button>
+	  </div>
+	
+	  <script>
+		document.addEventListener('DOMContentLoaded', function () {
+		  let currentPage = 1;
+		  const postsContainer = document.getElementById('postsContainer');
+		  const loadMoreButton = document.getElementById('loadMore');
+		  const createPostButton = document.getElementById('createPostButton');
+		  const postContent = document.getElementById('postContent');
+  
+		  // Function to fetch posts for a specific page
+		  function fetchPosts(page) {
+			fetch(`/posts/feed/?page=${page}`, {
+			  method: 'GET',
+			  headers: {
+				'Authorization': `Token ${localStorage.getItem('authToken')}`,
+				'Content-Type': 'application/json'
+			  }
+			})
+			.then(response => response.json())
+			.then(data => {
+			  if (data.status === 'success') {
+				if (data.posts.length === 0 && page === 1) {
+				  postsContainer.innerHTML = '<p class="text-center text-muted-foreground">No posts yet. Be the first to post!</p>';
+				  loadMoreButton.classList.add('hidden');
+				  return;
+				}
+  
+				if (data.posts.length === 0) {
+				  loadMoreButton.disabled = true;
+				  loadMoreButton.textContent = 'No more posts';
+				  loadMoreButton.classList.remove('btn-outline');
+				  loadMoreButton.classList.add('bg-muted', 'text-muted-foreground');
+				  return;
+				}
+  
+				if (page === 1) {
+				  postsContainer.innerHTML = ''; // Clear only if it's the first page
+				}
+				
+				renderPosts(data.posts);
+  
+				if (data.posts.length < data.page_size) {
+				  loadMoreButton.disabled = true;
+				  loadMoreButton.textContent = 'No more posts';
+				  loadMoreButton.classList.remove('btn-outline');
+				  loadMoreButton.classList.add('bg-muted', 'text-muted-foreground');
+				}
+			  } else {
+				alert(`Error: ${data.error}`);
+			  }
+			})
+			.catch(error => {
+			  console.error('Error fetching posts:', error);
+			  alert('Something went wrong. Please try again.');
+			});
+		  }
+  
+		  // Function to render posts
+		  function renderPosts(posts) {
+			posts.forEach(post => {
+			  const postElement = createPostElement(post);
+			  postsContainer.appendChild(postElement);
+			});
+		  }
+  
+		  // Function to create a single post element
+		  function createPostElement(post) {
+			const postElement = document.createElement('div');
+			postElement.classList.add('bg-card', 'shadow-lg', 'rounded-lg', 'overflow-hidden');
+			postElement.id = `post-${post.id}`;
+			
+			postElement.innerHTML = `
+			  <div class="p-4">
+				<div class="flex items-center">
+				  <img class="w-10 h-10 rounded-full" src="https://placehold.co/50x50" alt="User Avatar">
+				  <div class="ml-3">
+					<h2 class="font-bold">${post.author.first_name || post.author.username}</h2>
+					<p class="text-xs text-muted-foreground">${new Date(post.created_at).toLocaleString()}</p>
+				  </div>
+				  <div class="ml-auto relative">
+					<button class="action-btn" onclick="togglePostMenu('${post.id}')">
+					  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+					  </svg>
+					</button>
+					<div id="post-menu-${post.id}" class="absolute right-0 mt-1 w-32 bg-popover shadow-lg rounded-lg hidden z-10 border border-border">
+					  <button class="dropdown-btn">Edit</button>
+					  <button class="dropdown-btn text-destructive hover:bg-destructive/10">Delete</button>
+					</div>
+				  </div>
+				</div>
+				<p class="mt-3 text-foreground whitespace-pre-wrap">${post.content}</p>
+			  </div>
+			  <div class="px-4 py-2 border-t border-border bg-card">
+				<div class="flex justify-between">
+				  <button class="post-btn" onclick="handleLike('${post.id}')" id="likeButton-${post.id}">
+					<svg class="w-5 h-5 mr-1" fill="${post.is_liked ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+					  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+					</svg>
+					<span id="likeCount-${post.id}">${post.likes_count}</span>
+				  </button>
+				  <button class="post-btn" onclick="toggleComments('${post.id}')">
+					<svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+					</svg>
+					<span>${post.comments_count}</span>
+				  </button>
+				</div>
+			  </div>
+			  <div id="comments-section-${post.id}" class="hidden bg-popover px-4 py-3 border-t border-border">
+				<div id="comments-container-${post.id}">
+				  ${post.comments.map(comment => `
+					<div class="flex items-start mb-3">
+					  <img class="w-8 h-8 rounded-full mt-1" src="https://placehold.co/30x30" alt="User Avatar">
+					  <div class="ml-2">
+						<div class="bg-card rounded-lg px-3 py-2">
+						  <p class="font-medium text-sm">${comment.author.username}</p>
+						  <p class="text-foreground">${comment.text}</p>
+						</div>
+						<div class="flex text-xs text-muted-foreground mt-1 ml-2">
+						  <span>${new Date(comment.created_at).toLocaleTimeString()}</span>
+						</div>
+					  </div>
+					</div>
+				  `).join('')}
+				</div>
+				<div class="flex mt-2">
+				  <input 
+					type="text" 
+					placeholder="Write a comment..." 
+					class="flex-1 bg-input text-foreground border border-border rounded-full px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary"
+					id="commentInput-${post.id}"
+				  >
+				  <button class="btn btn-primary ml-2 px-3 py-2 text-sm" onclick="handleComment('${post.id}')">Post</button>
+				</div>
+			  </div>
+			`;
+  
+			return postElement;
+		  }
+  
+		  // Create post functionality
+		  createPostButton.addEventListener('click', () => {
+			const content = postContent.value.trim();
+			if (!content) return;
+  
+			fetch('/posts/create/', {
+				method: 'POST',
+				headers: {
+				  'Authorization': `Token ${localStorage.getItem('authToken')}`,
+				  'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ content })
+			  })
+			.then(response => response.json())
+			.then(data => {
+			  if (data.status === 'success') {
+				postContent.value = '';
+				// Add new post at the top
+				const postElement = createPostElement(data.post);
+				postsContainer.insertBefore(postElement, postsContainer.firstChild);
+				
+				// Show success message
+				showNotification('Post created successfully!', 'success');
+			  } else {
+				showNotification(`Error: ${data.error}`, 'error');
+			  }
+			})
+			.catch(error => {
+			  console.error('Error creating post:', error);
+			  showNotification('Something went wrong. Please try again.', 'error');
+			});
+		  });
+  
+		  // Load initial posts
+		  fetchPosts(currentPage);
+  
+		  // Add event listener to the "Load More" button
+		  loadMoreButton.addEventListener('click', () => {
+			currentPage++;
+			fetchPosts(currentPage);
+		  });
+		});
+  
+		// Global functions for post interactions
+		function togglePostMenu(postId) {
+		  const menu = document.getElementById(`post-menu-${postId}`);
+		  menu.classList.toggle('hidden');
+		}
+  
+		function toggleComments(postId) {
+		  const commentsSection = document.getElementById(`comments-section-${postId}`);
+		  commentsSection.classList.toggle('hidden');
+		}
+  
+		function handleLike(postId) {
+			fetch(`/${postId}/likes/`, {
+				method: 'POST',
+				headers: {
+				  'Authorization': `Token ${localStorage.getItem('authToken')}`,
+				  'Content-Type': 'application/json'
+				}
+			  })
+		  .then(response => response.json())
+		  .then(data => {
+			if (data.status === 'success') {
+			  const likeButton = document.getElementById(`likeButton-${postId}`);
+			  const likeCountElement = document.getElementById(`likeCount-${postId}`);
+			  
+			  // Update like button appearance
+			  const svg = likeButton.querySelector('svg');
+			  if (data.liked) {
+				svg.setAttribute('fill', 'currentColor');
+				likeButton.classList.add('text-blue-700', 'dark:text-blue-400');
+			  } else {
+				svg.setAttribute('fill', 'none');
+				likeButton.classList.remove('text-blue-700', 'dark:text-blue-400');
+			  }
+			  
+			  // Update like count
+			  likeCountElement.textContent = data.new_like_count;
+			} else {
+			  showNotification(`Error: ${data.error}`, 'error');
+			}
+		  })
+		  .catch(error => {
+			console.error('Error liking post:', error);
+			showNotification('Something went wrong. Please try again.', 'error');
+		  });
+		}
+  
+		function handleComment(postId) {
+		  const commentInput = document.getElementById(`commentInput-${postId}`);
+		  const commentText = commentInput.value.trim();
+  
+		  if (!commentText) return;
+  
+		  fetch(`/${postId}/comments/`, {
+			method: 'POST',
+			headers: {
+			  'Authorization': `Token ${localStorage.getItem('authToken')}`,
+			  'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ text: commentText })
+		  })
+		  .then(response => response.json())
+		  .then(data => {
+			if (data.status === 'success') {
+			  // Clear the input
+			  commentInput.value = '';
+			  
+			  // Update comments section
+			  const commentsContainer = document.getElementById(`comments-container-${postId}`);
+			  const commentElement = document.createElement('div');
+			  commentElement.classList.add('flex', 'items-start', 'mb-3');
+			  commentElement.innerHTML = `
+				<img class="w-8 h-8 rounded-full mt-1" src="https://placehold.co/30x30" alt="User Avatar">
+				<div class="ml-2">
+				  <div class="bg-card rounded-lg px-3 py-2">
+					<p class="font-medium text-sm">${data.comment.author.username}</p>
+					<p class="text-foreground">${data.comment.text}</p>
+				  </div>
+				  <div class="flex text-xs text-muted-foreground mt-1 ml-2">
+					<span>Just now</span>
+				  </div>
+				</div>
+			  `;
+			  commentsContainer.appendChild(commentElement);
+			  
+			  // Update comment count
+			  const commentCountElement = document.querySelector(`#post-${postId} .post-btn:nth-child(2) span`);
+			  const currentCount = parseInt(commentCountElement.textContent);
+			  commentCountElement.textContent = currentCount + 1;
+			  
+			  // Show comments section if hidden
+			  document.getElementById(`comments-section-${postId}`).classList.remove('hidden');
+			} else {
+			  showNotification(`Error: ${data.error}`, 'error');
+			}
+		  })
+		  .catch(error => {
+			console.error('Error adding comment:', error);
+			showNotification('Something went wrong. Please try again.', 'error');
+		  });
+		}
+  
+		function showNotification(message, type) {
+		  const notificationContainer = document.getElementById('notificationContainer');
+		  const notification = document.createElement('div');
+		  notification.className = `p-3 mb-2 rounded-lg ${
+			type === 'success' ? 'bg-success text-success-foreground' : 
+			type === 'error' ? 'bg-destructive text-destructive-foreground' : 
+			'bg-primary text-primary-foreground'
+		  }`;
+		  notification.textContent = message;
+		  notificationContainer.appendChild(notification);
+		  
+		  // Remove notification after 3 seconds
+		  setTimeout(() => {
+			notification.remove();
+		  }, 3000);
+		}
+	  </script>
+
+    <script>
+      const menuBtn = document.getElementById('menuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const closeMenuBtn = document.getElementById('closeMenuBtn');
+      menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.remove('hidden');
+        menuBtn.classList.add('hidden');
+      });
+      closeMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        menuBtn.classList.remove('hidden');
+      });
+
+      const actionsBtn = document.getElementById('actionsBtn');
+      const dropdownContent = document.getElementById('dropdownContent');
+      actionsBtn.addEventListener('click', () => {
+        dropdownContent.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

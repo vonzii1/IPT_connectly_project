@@ -1,0 +1,257 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+		<script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+		<script type="text/javascript">
+			window.tailwind.config = {
+			  darkMode: ['class'], 
+			  theme: {
+				extend: {
+				  colors: {
+					
+					border: 'hsl(0, 0.00%, 0.00%)', 
+					input: 'hsl(241, 80.70%, 26.50%)',
+					ring: 'hsl(230, 90%, 60%)', 
+					background: {
+					  DEFAULT: 'hsl(220, 15%, 97%)', 
+					  dark: 'hsl(220, 15%, 12%)', 
+					},
+					foreground: {
+					  DEFAULT: 'hsl(220, 15%, 18%)', 
+					  dark: 'hsl(0, 0.00%, 0.00%)', 
+					},
+		  
+					primary: {
+					  DEFAULT: 'hsl(245, 75%, 55%)',
+					  foreground: 'hsl(245, 100%, 95%)',
+					},
+		  
+					secondary: {
+					  DEFAULT: 'hsl(200, 2.50%, 23.30%)', 
+					  foreground: 'hsl(0, 0.00%, 100.00%)',
+					},
+		  
+					
+					success: {
+					  DEFAULT: 'hsl(150, 60%, 45%)', 
+					  foreground: 'hsl(150, 95%, 85%)',
+					},
+					warning: {
+					  DEFAULT: 'hsl(45, 95%, 55%)', 
+					  foreground: 'hsl(45, 95%, 90%)',
+					},
+					destructive: {
+					  DEFAULT: 'hsl(0, 75%, 50%)', 
+					  foreground: 'hsl(0, 95%, 90%)',
+					},
+		  
+					// Muted Colors (Subtle UI elements)
+					muted: {
+					  DEFAULT: 'hsl(241, 66.90%, 30.80%)',
+					  foreground: 'hsl(220, 12%, 80%)',
+					},
+		  
+					// Accent Colors
+					accent: {
+					  DEFAULT: 'hsl(192, 75.80%, 32.40%)', // Soft purple
+					  foreground: 'hsl(280, 90%, 95%)',
+					},
+		  
+					// UI Components
+					popover: {
+					  DEFAULT: 'hsl(220, 15%, 92%)',
+					  foreground: 'hsl(220, 15%, 30%)',
+					},
+					card: {
+					  DEFAULT: 'hsl(210, 20%, 94%)',
+					  foreground: 'hsl(210, 20%, 30%)',
+					},
+				  },
+				},
+			  },
+			};
+		  </script>
+		  
+		  <script>
+			function handleSignUp(event) {
+				event.preventDefault(); // Prevent default form submission
+				
+				const username = document.getElementById('username').value;
+				const first_name = document.getElementById('first_name').value;
+				const last_name = document.getElementById('last_name').value;
+                const email = document.getElementById('email').value;
+				const password = document.getElementById('password').value;
+	
+				const data = {
+					username: username,
+					first_name: first_name,
+					last_name: last_name,
+					email: email,
+					password: password
+				};
+	
+				// Send the POST request with the JSON data
+				fetch('/posts/users/create/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': '{{ csrf_token }}' // CSRF Token
+					},
+					body: JSON.stringify(data),
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.status == 'success') {
+						alert('Sign up successful');
+						// Redirect to the login page or index
+						window.location.href = "/posts/";
+					} else if (data.errors.password) {
+						alert('Password is required');
+					} else {
+						alert(Object.values(data.errors).join('\n'));
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+			}
+		</script>
+		<style type="text/tailwindcss">
+			@layer base {
+				:root {
+					--background: 0 0% 100%;
+--foreground: 240 10% 3.9%;
+--card: 0 0% 100%;
+--card-foreground: 240 10% 3.9%;
+--popover: 0 0% 100%;
+--popover-foreground: 240 10% 3.9%;
+--primary: 240 5.9% 10%;
+--primary-foreground: 0 0% 98%;
+--secondary: 240 4.8% 95.9%;
+--secondary-foreground: 240 5.9% 10%;
+--muted: 240 4.8% 95.9%;
+--muted-foreground: 240 3.8% 46.1%;
+--accent: 240 4.8% 95.9%;
+--accent-foreground: 240 5.9% 10%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 5.9% 90%;
+--input: 240 5.9% 90%;
+--ring: 240 5.9% 10%;
+--radius: 0.5rem;
+				}
+				.dark {
+					--background: 240 10% 3.9%;
+--foreground: 0 0% 98%;
+--card: 240 10% 3.9%;
+--card-foreground: 0 0% 98%;
+--popover: 240 10% 3.9%;
+--popover-foreground: 0 0% 98%;
+--primary: 0 0% 98%;
+--primary-foreground: 240 5.9% 10%;
+--secondary: 240 3.7% 15.9%;
+--secondary-foreground: 0 0% 98%;
+--muted: 240 3.7% 15.9%;
+--muted-foreground: 240 5% 64.9%;
+--accent: 240 3.7% 15.9%;
+--accent-foreground: 0 0% 98%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 3.7% 15.9%;
+--input: 240 3.7% 15.9%;
+--ring: 240 4.9% 83.9%;
+				}
+			}
+		</style>
+  </head>
+  <body>
+    <body class="bg-background text-foreground min-h-screen flex flex-col items-center justify-center">
+    <div class="max-w-md w-full bg-card shadow-lg rounded-lg overflow-hidden">
+        <h1 class="text-4xl font-bold text-center mt-8">Welcome to Connectly</h1>
+        <p class="text-center text-secondary-foreground">Please sign up below</p>
+        <form id="signup-form" onsubmit="handleSignUp(event)">
+		{% csrf_token %}
+        <div class="p-4">
+            <input type="text" placeholder="Username" id="username" name="username" class="w-full bg-input text-secondary-foreground border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary mb-4">
+            <input type="text" placeholder="First Name" id="first_name" name="first_name" class="w-full bg-input text-secondary-foreground border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary mb-4">
+            <input type="text" placeholder="Last Name" id="last_name" name="last_name" class="w-full bg-input text-secondary-foreground border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary mb-4">
+			<input type="email" placeholder="Email" id="email" name="email" class="w-full bg-input text-secondary-foreground border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary mb-4">
+            <input type="password" placeholder="Password" id="password" name="password" class="w-full bg-input text-secondary-foreground border border-primary rounded-lg p-2 focus:outline-none focus:ring focus:ring-primary mb-4">
+            <button class="bg-primary text-primary-foreground w-full py-2 rounded-lg">Sign Up</button>
+        </div>
+        </form>
+        
+		<a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=617976064935-vur4boj7khjr1lguiimprhpjmm186umk.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/accounts/google/login/callback/&response_type=code&scope=openid%20email%20profile&prompt=select_account">
+			<button class="bg-white text-black border border-black w-full py-2 rounded-lg flex items-center justify-center">
+			<svg id="Capa_1" style="enable-background:new 0 0 150 150; width: 24px; height: 24px;" version="1.1" viewBox="0 0 150 150" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<style type="text/css">
+					.st0{fill:#1A73E8;}
+					.st1{fill:#EA4335;}
+					.st2{fill:#4285F4;}
+					.st3{fill:#FBBC04;}
+					.st4{fill:#34A853;}
+					.st5{fill:#4CAF50;}
+					.st6{fill:#1E88E5;}
+					.st7{fill:#E53935;}
+					.st8{fill:#C62828;}
+					.st9{fill:#FBC02D;}
+					.st10{fill:#1565C0;}
+					.st11{fill:#2E7D32;}
+					.st12{fill:#F6B704;}
+					.st13{fill:#E54335;}
+					.st14{fill:#4280EF;}
+					.st15{fill:#34A353;}
+					.st16{clip-path:url(#SVGID_2_);}
+					.st17{fill:#188038;}
+					.st18{opacity:0.2;fill:#FFFFFF;enable-background:new    ;}
+					.st19{opacity:0.3;fill:#0D652D;enable-background:new    ;}
+					.st20{clip-path:url(#SVGID_4_);}
+					.st21{opacity:0.3;fill:url(#_45_shadow_1_);enable-background:new    ;}
+					.st22{clip-path:url(#SVGID_6_);}
+					.st23{fill:#FA7B17;}
+					.st24{opacity:0.3;fill:#174EA6;enable-background:new    ;}
+					.st25{opacity:0.3;fill:#A50E0E;enable-background:new    ;}
+					.st26{opacity:0.3;fill:#E37400;enable-background:new    ;}
+					.st27{fill:url(#Finish_mask_1_);}
+					.st28{fill:#FFFFFF;}
+					.st29{fill:#0C9D58;}
+					.st30{opacity:0.2;fill:#004D40;enable-background:new    ;}
+					.st31{opacity:0.2;fill:#3E2723;enable-background:new    ;}
+					.st32{fill:#FFC107;}
+					.st33{opacity:0.2;fill:#1A237E;enable-background:new    ;}
+					.st34{opacity:0.2;}
+					.st35{fill:#1A237E;}
+					.st36{fill:url(#SVGID_7_);}
+					.st37{fill:#FBBC05;}
+					.st38{clip-path:url(#SVGID_9_);fill:#E53935;}
+					.st39{clip-path:url(#SVGID_11_);fill:#FBC02D;}
+					.st40{clip-path:url(#SVGID_13_);fill:#E53935;}
+					.st41{clip-path:url(#SVGID_15_);fill:#FBC02D;}
+				</style>
+				<g>
+					<path class="st14" d="M120,76.1c0-3.1-0.3-6.3-0.8-9.3H75.9v17.7h24.8c-1,5.7-4.3,10.7-9.2,13.9l14.8,11.5C115,101.8,120,90,120,76.1L120,76.1z"/>
+					<path class="st15" d="M75.9,120.9c12.4,0,22.8-4.1,30.4-11.1L91.5,98.4c-4.1,2.8-9.4,4.4-15.6,4.4c-12,0-22.1-8.1-25.8-18.9L34.9,95.6C42.7,111.1,58.5,120.9,75.9,120.9z"/>
+					<path class="st12" d="M50.1,83.8c-1.9-5.7-1.9-11.9,0-17.6L34.9,54.4c-6.5,13-6.5,28.3,0,41.2L50.1,83.8z"/>
+					<path class="st13" d="M75.9,47.3c6.5-0.1,12.9,2.4,17.6,6.9L106.6,41C98.3,33.2,87.3,29,75.9,29.1c-17.4,0-33.2,9.8-41,25.3l15.2,11.8C53.8,55.3,63.9,47.3,75.9,47.3z"/>
+				</g>
+			</svg>
+
+			
+				Sign up with Google
+	
+			</button>
+		</a>
+		
+        <div class="p-4 bg-secondary rounded-lg my-4">
+            <p class="text-secondary-foreground text-center">Already have an account?</p>
+            <a href="/posts/"><button class="bg-primary text-primary-foreground mt-2 w-full py-2 rounded-lg">Login</button></a>
+        </div>
+		
+    </div>
+</body>
+
+
+  </body>
+</html>
